@@ -30,9 +30,10 @@
   ],
   "rules": {
     "prettier/prettier": "error",
+    "arrow-parens": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
-    "react/jsx-filename-extension": [1, { "extensions": [".tsx"] }],
+    "react/jsx-filename-extension": [1, { "extensions": [".tsx", ".ts"] }],
     "import/prefer-default-export": "off",
     "import/extensions": [
       "error",
