@@ -6,19 +6,13 @@ import GenericCard from '../../components/GenericCard';
 import logo from '../../assets/logo.png';
 
 import { Container } from './styles';
-
-interface Character {
-  id: number;
-  name: string;
-  status: string;
-  image: string;
-}
+import { CharacterList } from '../../interfaces/character';
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [apiPage, setApiPage] = useState(1);
   const [apiError, setApiError] = useState('');
-  const [characters, setCharacters] = useState<Character[]>([]);
+  const [characters, setCharacters] = useState<CharacterList[]>([]);
 
   const loadCharacters = useCallback(async () => {
     setLoading(true);

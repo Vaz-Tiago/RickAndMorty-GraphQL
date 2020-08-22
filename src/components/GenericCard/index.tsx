@@ -3,20 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Container, Info, Name, Status } from './styles';
+import { CharacterList } from '../../interfaces/character';
 
-interface Character {
-  id: number;
-  name: string;
-  status: string;
-  image: string;
-}
-
-const GenericCard: React.FC<Character> = ({
+const GenericCard: React.FC<CharacterList> = ({
   id,
   name,
   status,
   image,
-}: Character) => {
+}: CharacterList) => {
   const [editedName, setEditedName] = useState(name);
 
   useEffect(() => {
@@ -24,7 +18,7 @@ const GenericCard: React.FC<Character> = ({
       const editName = name.substr(0, 27);
       setEditedName(`${editName}...`);
     }
-  }, []);
+  }, [name]);
 
   return (
     <Link to={`/details/${id}`}>

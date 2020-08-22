@@ -3,22 +3,18 @@ import { Link, useParams } from 'react-router-dom';
 import { gql } from '@apollo/client';
 import api from '../../services/api';
 
-interface CharacterDetail {
-  id: number;
-  name: string;
-  image: string;
-  episode: Episode[];
-}
+import { CharacterDetails } from '../../interfaces/character';
+import CharacterInfoCard from '../../components/CharacterInfoCard';
 
-interface Episode {
-  name: string;
-}
+import { Container } from './styles';
 
 const Details: React.FC = () => {
   const { id } = useParams();
+
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState('');
-  const [character, setCharacter] = useState<CharacterDetail | null>(null);
+  const [character, setCharacter] = useState<CharacterDetails | null>(null);
+
   const loadCharacter = useCallback(async (characterId: number) => {
     setLoading(true);
     const GET_CHARACTER = {
@@ -47,16 +43,11 @@ const Details: React.FC = () => {
 
   useEffect(() => {
     window.document.title = character ? character.name : 'Loading...';
-
     loadCharacter(id);
   }, [character, loadCharacter, id]);
 
-  if (loading) {
-    return <p>Loading....</p>;
-  }
-
   return (
-    <div>
+    <Container>
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -64,17 +55,16 @@ const Details: React.FC = () => {
           <Link to="/">Voltar</Link>
           {apiError && <h3>{apiError}</h3>}
           {character && (
-            <div>
-              <h1>{character.name}</h1>
-              <img src={character.image} alt={character.name} />
-              {character.episode.map(episode => (
-                <p key={episode.name}>{episode.name}</p>
-              ))}
-            </div>
+            <CharacterInfoCard
+              episode={character.episode}
+              id={character.id}
+              image={character.image}
+              name={character.name}
+            />
           )}
         </>
       )}
-    </div>
+    </Container>
   );
 };
 
