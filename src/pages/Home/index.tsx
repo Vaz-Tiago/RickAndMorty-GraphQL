@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { gql } from '@apollo/client';
 import api from '../../services/api';
 
@@ -64,11 +65,13 @@ const Home: React.FC = () => {
   return (
     <div>
       {characters.map(character => (
-        <div key={character.id}>
-          <h1>{character.name}</h1>
-          <h3>{character.status}</h3>
-          <img src={character.image} alt={character.name} />
-        </div>
+        <Link to={`/details/${character.id}`}>
+          <div key={character.id}>
+            <h1>{character.name}</h1>
+            <h3>{character.status}</h3>
+            <img src={character.image} alt={character.name} />
+          </div>
+        </Link>
       ))}
       {loading && 'Carregando...'}
     </div>
