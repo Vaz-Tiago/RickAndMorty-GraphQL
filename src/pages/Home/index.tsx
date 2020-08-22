@@ -11,14 +11,16 @@ interface Character {
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
+  const [apiPage, setApiPage] = useState(1);
   const [apiError, setApiError] = useState('');
   const [characters, setCharacters] = useState<Character[]>([]);
 
   const loadCharacters = useCallback(async () => {
+    setLoading(true);
     const GET_CHARACTERS = {
       query: gql`
         query {
-          characters {
+          characters (page: ${apiPage}){
             results {
               id
               name
@@ -32,23 +34,28 @@ const Home: React.FC = () => {
 
     try {
       const response = await api.query(GET_CHARACTERS);
-      setCharacters(response.data.characters.results);
+      const charactersResponse = response.data.characters.results;
+      const charactersList = characters.concat(charactersResponse);
+      setCharacters(charactersList);
+      setApiPage(apiPage + 1);
     } catch (err) {
       setApiError(err.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [apiPage, characters]);
+
+  window.onscroll = () => {
+    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
+      loadCharacters();
+    }
+  };
 
   useEffect(() => {
     window.document.title = 'Home';
     loadCharacters();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  if (loading) {
-    return <p>Carregando...</p>;
-  }
 
   if (apiError) {
     return <p>{apiError}</p>;
@@ -63,6 +70,7 @@ const Home: React.FC = () => {
           <img src={character.image} alt={character.name} />
         </div>
       ))}
+      {loading && 'Carregando...'}
     </div>
   );
 };
