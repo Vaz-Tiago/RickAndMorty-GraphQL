@@ -12,7 +12,7 @@ interface Character {
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [apiPage, setApiPage] = useState(1);
+  const [apiPage, setApiPage] = useState(33);
   const [apiError, setApiError] = useState('');
   const [characters, setCharacters] = useState<Character[]>([]);
 
@@ -47,6 +47,7 @@ const Home: React.FC = () => {
   }, [apiPage, characters]);
 
   window.onscroll = () => {
+    if (apiError) return;
     if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
       loadCharacters();
     }
@@ -58,7 +59,7 @@ const Home: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (apiError) {
+  if (apiError && apiError !== '404: Not Found') {
     return <p>{apiError}</p>;
   }
 
@@ -74,6 +75,7 @@ const Home: React.FC = () => {
         </Link>
       ))}
       {loading && 'Carregando...'}
+      {apiError && apiError === '404: Not Found' && 'Nothing to Show'}
     </div>
   );
 };
