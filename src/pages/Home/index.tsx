@@ -1,7 +1,11 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { gql } from '@apollo/client';
 import api from '../../services/api';
+
+import GenericCard from '../../components/GenericCard';
+import logo from '../../assets/logo.png';
+
+import { Container } from './styles';
 
 interface Character {
   id: number;
@@ -12,7 +16,7 @@ interface Character {
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [apiPage, setApiPage] = useState(33);
+  const [apiPage, setApiPage] = useState(1);
   const [apiError, setApiError] = useState('');
   const [characters, setCharacters] = useState<Character[]>([]);
 
@@ -64,19 +68,22 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div>
-      {characters.map(character => (
-        <Link to={`/details/${character.id}`}>
-          <div key={character.id}>
-            <h1>{character.name}</h1>
-            <h3>{character.status}</h3>
-            <img src={character.image} alt={character.name} />
-          </div>
-        </Link>
-      ))}
-      {loading && 'Carregando...'}
-      {apiError && apiError === '404: Not Found' && 'Nothing to Show'}
-    </div>
+    <>
+      <img src={logo} alt="Rick and Morty Characters" />
+      <Container>
+        {characters.map(character => (
+          <GenericCard
+            key={character.id}
+            id={character.id}
+            name={character.name}
+            status={character.status}
+            image={character.image}
+          />
+        ))}
+        {loading && 'Carregando...'}
+        {apiError && apiError === '404: Not Found' && 'Nothing to Show'}
+      </Container>
+    </>
   );
 };
 
