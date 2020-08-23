@@ -19,6 +19,10 @@ export const Back = styled.div`
   a {
     color: #d2fec0;
   }
+
+  @media (max-width: 768px) {
+    width: 380px;
+  }
 `;
 
 export const Loading = styled.div``;

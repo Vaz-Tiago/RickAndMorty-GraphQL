@@ -14,6 +14,11 @@ export const Content = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 export const Image = styled.img`
@@ -26,7 +31,11 @@ export const Image = styled.img`
 
 export const Info = styled.div`
   margin-left: 40px;
-  width: 150000px;
+  width: 300px;
+
+  @media (max-width: 768px) {
+    margin: 30px 0;
+  }
 `;
 
 export const Name = styled.h2`
@@ -51,9 +60,12 @@ export const Episodes = styled.div`
 
   height: 235px;
 
-  p {
+  ul {
+    margin-left: 25px;
+  }
+  li {
     color: #0a3139;
-    line-height: 22px;
+    padding: 5px;
   }
 
   ::-webkit-scrollbar {
@@ -67,5 +79,11 @@ export const Episodes = styled.div`
   ::-webkit-scrollbar-thumb {
     background: #d2fec0;
     border-radius: 10px;
+  }
+
+  @media (max-width: 768px) {
+    overflow: hidden;
+    height: auto;
+    margin-top: 30px;
   }
 `;

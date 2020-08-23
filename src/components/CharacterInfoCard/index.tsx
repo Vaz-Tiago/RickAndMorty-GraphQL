@@ -14,9 +14,11 @@ const CharacterInfoCard: React.FC<CharacterDetails> = ({
       <Info>
         <Name>{name}</Name>
         <Episodes>
-          {episode.map(({ name: episodeName }) => (
-            <p key={episodeName}>{episodeName}</p>
-          ))}
+          <ul>
+            {episode.map(({ name: episodeName }) => (
+              <li key={episodeName}>{episodeName}</li>
+            ))}
+          </ul>
         </Episodes>
       </Info>
     </Content>
