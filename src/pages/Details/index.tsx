@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { FiArrowLeft } from 'react-icons/fi';
 import { gql } from '@apollo/client';
-import api from '../../services/api';
 
-import { CharacterDetails } from '../../interfaces/character';
+import api from '../../services/api';
+import Header from '../../components/Header';
+import LoadingIcon from '../../components/LoadingIcon';
 import CharacterInfoCard from '../../components/CharacterInfoCard';
 
-import { Container } from './styles';
-import Header from '../../components/Header';
+import { CharacterDetails } from '../../interfaces/character';
+import { Container, Back } from './styles';
 
 const Details: React.FC = () => {
   const { id } = useParams();
@@ -59,10 +61,14 @@ const Details: React.FC = () => {
       <Header pageTitle={character ? character.name : 'Loading...'} />
       <Container>
         {loading ? (
-          <p>Loading...</p>
+          <LoadingIcon />
         ) : (
           <>
-            <Link to="/">Voltar</Link>
+            <Back>
+              <Link to="/">
+                <FiArrowLeft size={40} />
+              </Link>
+            </Back>
             {apiError && <h3>{apiError}</h3>}
             {character && (
               <CharacterInfoCard

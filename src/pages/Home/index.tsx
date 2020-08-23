@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { FiLoader } from 'react-icons/fi';
 import { gql } from '@apollo/client';
 
 import api from '../../services/api';
@@ -8,6 +7,7 @@ import GenericCard from '../../components/GenericCard';
 
 import { Container, Loading } from './styles';
 import { CharacterList } from '../../interfaces/character';
+import LoadingIcon from '../../components/LoadingIcon';
 
 const Home: React.FC = () => {
   const unmounted = useRef(false);
@@ -88,7 +88,7 @@ const Home: React.FC = () => {
 
         {loading && (
           <Loading>
-            <FiLoader size={40} />
+            <LoadingIcon />
           </Loading>
         )}
         {apiError && apiError === '404: Not Found' && 'Nothing to Show'}
