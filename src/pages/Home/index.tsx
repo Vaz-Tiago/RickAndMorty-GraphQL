@@ -4,10 +4,11 @@ import { gql } from '@apollo/client';
 import api from '../../services/api';
 import Header from '../../components/Header';
 import GenericCard from '../../components/GenericCard';
+import LoadingIcon from '../../components/LoadingIcon';
+import ErrorMessage from '../../components/ErrorMessage';
 
 import { Container, Loading } from './styles';
 import { CharacterList } from '../../interfaces/character';
-import LoadingIcon from '../../components/LoadingIcon';
 
 const Home: React.FC = () => {
   const unmounted = useRef(false);
@@ -68,30 +69,35 @@ const Home: React.FC = () => {
     }
   };
 
-  if (apiError && apiError !== '404: Not Found') {
-    return <p>{apiError}</p>;
-  }
-
   return (
     <>
       <Header pageTitle="Home" />
       <Container>
-        {characters.map(character => (
-          <GenericCard
-            key={character.id}
-            id={character.id}
-            name={character.name}
-            status={character.status}
-            image={character.image}
+        {apiError && apiError !== '404: Not Found' ? (
+          <ErrorMessage
+            title="Something Wrong"
+            message="We are working to fix this problem, try again later."
           />
-        ))}
+        ) : (
+          <>
+            {characters.map(character => (
+              <GenericCard
+                key={character.id}
+                id={character.id}
+                name={character.name}
+                status={character.status}
+                image={character.image}
+              />
+            ))}
 
-        {loading && (
-          <Loading>
-            <LoadingIcon />
-          </Loading>
+            {loading && (
+              <Loading>
+                <LoadingIcon />
+              </Loading>
+            )}
+            {apiError && apiError === '404: Not Found' && 'Nothing to Show'}
+          </>
         )}
-        {apiError && apiError === '404: Not Found' && 'Nothing to Show'}
       </Container>
     </>
   );

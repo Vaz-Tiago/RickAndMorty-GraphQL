@@ -10,6 +10,7 @@ import CharacterInfoCard from '../../components/CharacterInfoCard';
 
 import { CharacterDetails } from '../../interfaces/character';
 import { Container, Back } from './styles';
+import ErrorMessage from '../../components/ErrorMessage';
 
 const Details: React.FC = () => {
   const { id } = useParams();
@@ -69,7 +70,12 @@ const Details: React.FC = () => {
                 <FiArrowLeft size={40} />
               </Link>
             </Back>
-            {apiError && <h3>{apiError}</h3>}
+            {apiError && (
+              <ErrorMessage
+                title="Something Wrong!"
+                message="We are working to fix this problem, try again later."
+              />
+            )}
             {character && (
               <CharacterInfoCard
                 episode={character.episode}
