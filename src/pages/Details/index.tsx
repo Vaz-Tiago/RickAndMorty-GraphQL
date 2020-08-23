@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { gql } from '@apollo/client';
 import api from '../../services/api';
@@ -7,20 +7,25 @@ import { CharacterDetails } from '../../interfaces/character';
 import CharacterInfoCard from '../../components/CharacterInfoCard';
 
 import { Container } from './styles';
+import Header from '../../components/Header';
 
 const Details: React.FC = () => {
   const { id } = useParams();
 
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState('');
-  const [character, setCharacter] = useState<CharacterDetails | null>(null);
+  const [character, setCharacter] = useState<CharacterDetails>();
 
-  const loadCharacter = useCallback(async (characterId: number) => {
+  useEffect(() => {
+    let unmounted = false;
     setLoading(true);
-    const GET_CHARACTER = {
-      query: gql`
+    const parsedId = Number(id);
+
+    api
+      .query({
+        query: gql`
         query {
-          character(id: ${characterId}) {
+          character(id: ${parsedId}) {
             id
             name
             image
@@ -30,41 +35,47 @@ const Details: React.FC = () => {
           }
         }
       `,
+      })
+      .then(response => {
+        if (!unmounted) {
+          setCharacter(response.data.character);
+          setLoading(false);
+        }
+      })
+      .catch(err => {
+        if (!unmounted) {
+          setApiError(err.message);
+          setLoading(false);
+        }
+      });
+    return () => {
+      unmounted = true;
     };
-    try {
-      const response = await api.query(GET_CHARACTER);
-      setCharacter(response.data.character);
-    } catch (err) {
-      setApiError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    window.document.title = character ? character.name : 'Loading...';
-    loadCharacter(id);
-  }, [character, loadCharacter, id]);
-
   return (
-    <Container>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <Link to="/">Voltar</Link>
-          {apiError && <h3>{apiError}</h3>}
-          {character && (
-            <CharacterInfoCard
-              episode={character.episode}
-              id={character.id}
-              image={character.image}
-              name={character.name}
-            />
-          )}
-        </>
-      )}
-    </Container>
+    <>
+      <Header pageTitle={character ? character.name : 'Loading...'} />
+      <Container>
+        {loading ? (
+          <p>Loading...</p>
+        ) : (
+          <>
+            <Link to="/">Voltar</Link>
+            {apiError && <h3>{apiError}</h3>}
+            {character && (
+              <CharacterInfoCard
+                episode={character.episode}
+                id={character.id}
+                image={character.image}
+                name={character.name}
+              />
+            )}
+          </>
+        )}
+      </Container>
+    </>
   );
 };
 

@@ -1,4 +1,3 @@
-/* eslint-disable object-curly-newline */
 import React from 'react';
 import { CharacterDetails } from '../../interfaces/character';
 
@@ -8,23 +7,19 @@ const CharacterInfoCard: React.FC<CharacterDetails> = ({
   image,
   name,
   episode,
-}: CharacterDetails) => {
-  console.log(episode);
-
-  return (
-    <Container>
-      <Content>
-        <Image src={image} alt={name} />
-        <Info>
-          <Name>{name}</Name>
-          <Episodes>
-            {episode.map(({ name: episodeName }) => (
-              <p key={episodeName}>{episodeName}</p>
-            ))}
-          </Episodes>
-        </Info>
-      </Content>
-    </Container>
-  );
-};
+}: CharacterDetails) => (
+  <Container>
+    <Content>
+      <Image src={image} alt={name} />
+      <Info>
+        <Name>{name}</Name>
+        <Episodes>
+          {episode.map(({ name: episodeName }) => (
+            <p key={episodeName}>{episodeName}</p>
+          ))}
+        </Episodes>
+      </Info>
+    </Content>
+  </Container>
+);
 export default CharacterInfoCard;

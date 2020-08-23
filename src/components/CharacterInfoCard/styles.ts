@@ -10,12 +10,10 @@ export const Container = styled.div`
   border-radius: 45px;
 `;
 
-export const Loading = styled.div``;
-
 export const Content = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
 `;
 
 export const Image = styled.img`
@@ -27,8 +25,8 @@ export const Image = styled.img`
 `;
 
 export const Info = styled.div`
-  flex: 1;
   margin-left: 40px;
+  width: 150000px;
 `;
 
 export const Name = styled.h2`

@@ -1,21 +1,21 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { gql } from '@apollo/client';
 import api from '../../services/api';
 
 import GenericCard from '../../components/GenericCard';
-import logo from '../../assets/logo.png';
 
 import { Container } from './styles';
 import { CharacterList } from '../../interfaces/character';
+import Header from '../../components/Header';
 
 const Home: React.FC = () => {
+  const unmounted = useRef(false);
   const [loading, setLoading] = useState(true);
   const [apiPage, setApiPage] = useState(1);
   const [apiError, setApiError] = useState('');
   const [characters, setCharacters] = useState<CharacterList[]>([]);
 
   const loadCharacters = useCallback(async () => {
-    setLoading(true);
     const GET_CHARACTERS = {
       query: gql`
         query {
@@ -30,19 +30,35 @@ const Home: React.FC = () => {
         }
       `,
     };
+    if (!unmounted.current) {
+      setLoading(true);
+    }
 
     try {
       const response = await api.query(GET_CHARACTERS);
       const charactersResponse = response.data.characters.results;
       const charactersList = characters.concat(charactersResponse);
-      setCharacters(charactersList);
-      setApiPage(apiPage + 1);
+      if (!unmounted.current) {
+        setCharacters(charactersList);
+        setApiPage(apiPage + 1);
+        setLoading(false);
+      }
     } catch (err) {
-      setApiError(err.message);
-    } finally {
-      setLoading(false);
+      if (!unmounted.current) {
+        setApiError(err.message);
+        setLoading(false);
+      }
     }
   }, [apiPage, characters]);
+
+  useEffect(() => {
+    setLoading(true);
+    loadCharacters();
+    return () => {
+      unmounted.current = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   window.onscroll = () => {
     if (apiError) return;
@@ -51,19 +67,13 @@ const Home: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    window.document.title = 'Home';
-    loadCharacters();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   if (apiError && apiError !== '404: Not Found') {
     return <p>{apiError}</p>;
   }
 
   return (
     <>
-      <img src={logo} alt="Rick and Morty Characters" />
+      <Header pageTitle="Home" />
       <Container>
         {characters.map(character => (
           <GenericCard
