@@ -1,8 +1,11 @@
-# Taqtile Test
+# Rick and Morty
 
-### Rick and Morty graphql API
+## GraphQL Study
 
 - List the characters and show his details.
+
+The API:
+https://rickandmortyapi.com/graphql
 
 ## Scripts
 
