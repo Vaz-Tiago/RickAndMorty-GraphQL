@@ -10,12 +10,11 @@ import Paginate from '../../components/Paginate';
 
 import { Container, Loading } from './styles';
 import { CharacterList } from '../../interfaces/character';
-import { Pagination } from '../../interfaces/pagination';
+import { ApiPagination } from '../../interfaces/pagination';
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
-  const [apiPage, setApiPage] = useState(1);
-  const [apiPagination, setApiPagination] = useState<Pagination>({
+  const [apiPagination, setApiPagination] = useState<ApiPagination>({
     pages: 0,
     count: 0,
     current: 1,
@@ -58,18 +57,20 @@ const Home: React.FC = () => {
       setApiPagination({
         pages: paginationInfo.pages,
         count: paginationInfo.count,
-        current: apiPagination.current,
+        current: apiPagination.current + 1,
         next: paginationInfo.next,
         prev: paginationInfo.prev,
         loading: false,
       });
-      setApiPage(apiPage + 1);
       setLoading(false);
     } catch (err) {
       setApiError(err.message);
       setLoading(false);
     }
-  }, [apiPage, characters, apiPagination]);
+  }, [characters, apiPagination]);
+
+  // TODO Create the navigation functions
+  // FIRST - PREV - NEXT - LAST
 
   useEffect(() => {
     setLoading(true);
