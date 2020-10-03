@@ -2,7 +2,7 @@ export interface ApiPagination {
   count: number;
   pages: number;
   current: number;
-  next: number | null;
-  prev: number | null;
-  loading: boolean;
+  next: number;
+  prev: number;
+  loaded: boolean;
 }

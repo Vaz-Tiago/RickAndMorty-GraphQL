@@ -6,11 +6,13 @@ import Header from '../../components/Header';
 import GenericCard from '../../components/GenericCard';
 import LoadingIcon from '../../components/LoadingIcon';
 import ErrorMessage from '../../components/ErrorMessage';
-import Paginate from '../../components/Paginate';
 
 import { Container, Loading } from './styles';
 import { CharacterList } from '../../interfaces/character';
 import { ApiPagination } from '../../interfaces/pagination';
+
+// FIXME Ao carregar mais dados, vai direto para o fim da lista.
+// Ver como manter a lista no local atual.
 
 const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -19,17 +21,18 @@ const Home: React.FC = () => {
     count: 0,
     current: 1,
     next: 0,
-    prev: null,
-    loading: true,
+    prev: 0,
+    loaded: false,
   });
   const [apiError, setApiError] = useState('');
   const [characters, setCharacters] = useState<CharacterList[]>([]);
 
-  const loadCharacters = useCallback(async () => {
-    const GET_CHARACTERS = {
-      query: gql`
+  const loadCharacters = useCallback(
+    async (page: number) => {
+      const GET_CHARACTERS = {
+        query: gql`
         query {
-          characters (page: ${apiPagination.current}){
+          characters (page: ${page}){
             results {
               id
               name
@@ -45,39 +48,37 @@ const Home: React.FC = () => {
           }
         }
       `,
-    };
-    setLoading(true);
-    try {
-      const response = await api.query(GET_CHARACTERS);
-      const charactersResponse = response.data.characters.results;
-      const charactersList = characters.concat(charactersResponse);
-      setCharacters(charactersList);
-      // Pagination
-      const paginationInfo = response.data.characters.info;
-      setApiPagination({
-        pages: paginationInfo.pages,
-        count: paginationInfo.count,
-        current: apiPagination.current + 1,
-        next: paginationInfo.next,
-        prev: paginationInfo.prev,
-        loading: false,
-      });
-      setLoading(false);
-    } catch (err) {
-      setApiError(err.message);
-      setLoading(false);
-    }
-  }, [characters, apiPagination]);
-
-  // TODO Create the navigation functions
-  // FIRST - PREV - NEXT - LAST
-
+      };
+      setLoading(true);
+      try {
+        const response = await api.query(GET_CHARACTERS);
+        const charactersResponse = response.data.characters.results;
+        const charactersList = characters.concat(charactersResponse);
+        setCharacters(charactersList);
+        // Pagination
+        const paginationInfo = response.data.characters.info;
+        setApiPagination({
+          pages: paginationInfo.pages,
+          count: paginationInfo.count,
+          current: apiPagination.next
+            ? apiPagination.next - 1
+            : apiPagination.current + 1,
+          next: paginationInfo.next ? paginationInfo.next : 0,
+          prev: paginationInfo.prev ? paginationInfo.prev : 0,
+          loaded: true,
+        });
+      } catch (err) {
+        setApiError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [characters, apiPagination],
+  );
   useEffect(() => {
-    setLoading(true);
-    loadCharacters();
+    loadCharacters(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   return (
     <>
       <Header pageTitle="Home" />
@@ -98,17 +99,28 @@ const Home: React.FC = () => {
                 image={character.image}
               />
             ))}
-
             {loading && (
               <Loading>
                 <LoadingIcon />
               </Loading>
             )}
-            {apiError && apiError === '404: Not Found' && 'Nothing to Show'}
           </>
         )}
       </Container>
-      <Paginate />
+      {apiPagination.loaded && (
+        <>
+          {apiPagination.next !== 0 ? (
+            <button
+              type="button"
+              onClick={() => loadCharacters(apiPagination.next)}
+            >
+              Carregar Mais
+            </button>
+          ) : (
+            <p>Nada para exibir</p>
+          )}
+        </>
+      )}
     </>
   );
 };
