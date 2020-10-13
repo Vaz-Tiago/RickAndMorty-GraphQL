@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { gql } from '@apollo/client';
 
 import api from '../../services/api';
@@ -7,7 +7,7 @@ import GenericCard from '../../components/GenericCard';
 import LoadingIcon from '../../components/LoadingIcon';
 import ErrorMessage from '../../components/ErrorMessage';
 
-import { Container, Loading } from './styles';
+import { Container, Loading, Content, Paginate } from './styles';
 import { CharacterList } from '../../interfaces/character';
 import { ApiPagination } from '../../interfaces/pagination';
 
@@ -20,12 +20,13 @@ const Home: React.FC = () => {
     pages: 0,
     count: 0,
     current: 1,
-    next: 0,
+    next: 2,
     prev: 0,
     loaded: false,
   });
   const [apiError, setApiError] = useState('');
   const [characters, setCharacters] = useState<CharacterList[]>([]);
+  const loader = useRef(null);
 
   const loadCharacters = useCallback(
     async (page: number) => {
@@ -57,6 +58,8 @@ const Home: React.FC = () => {
         setCharacters(charactersList);
         // Pagination
         const paginationInfo = response.data.characters.info;
+        console.log(paginationInfo);
+
         setApiPagination({
           pages: paginationInfo.pages,
           count: paginationInfo.count,
@@ -75,10 +78,37 @@ const Home: React.FC = () => {
     },
     [characters, apiPagination],
   );
+
+  const handleObserver = useCallback(
+    async entity => {
+      const target = entity[0];
+
+      if (target.isIntersecting) {
+        loadCharacters(apiPagination.next);
+      }
+    },
+    [apiPagination, loadCharacters],
+  );
+
   useEffect(() => {
-    loadCharacters(1);
+    const options = {
+      root: null,
+      rootMargin: '5px',
+      treshould: 1.0,
+    };
+
+    const observer = new IntersectionObserver(handleObserver, options);
+
+    const test = loader.current;
+
+    if (test) {
+      observer.observe(test);
+    }
+
+    loadCharacters(apiPagination.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <>
       <Header pageTitle="Home" />
@@ -89,7 +119,7 @@ const Home: React.FC = () => {
             message="We are working to fix this problem, try again later."
           />
         ) : (
-          <>
+          <Content>
             {characters.map(character => (
               <GenericCard
                 key={character.id}
@@ -104,23 +134,28 @@ const Home: React.FC = () => {
                 <LoadingIcon />
               </Loading>
             )}
-          </>
+          </Content>
         )}
+
+        <div ref={loader} />
+
+        {/* {apiPagination.loaded && (
+          <Paginate ref={loader}>
+            {apiPagination.next !== 0 ? (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => loadCharacters(apiPagination.next)}
+                >
+                  Carregar Mais
+                </button>
+              </div>
+            ) : (
+              <p>Nada para exibir</p>
+            )}
+          </Paginate>
+        )} */}
       </Container>
-      {apiPagination.loaded && (
-        <>
-          {apiPagination.next !== 0 ? (
-            <button
-              type="button"
-              onClick={() => loadCharacters(apiPagination.next)}
-            >
-              Carregar Mais
-            </button>
-          ) : (
-            <p>Nada para exibir</p>
-          )}
-        </>
-      )}
     </>
   );
 };

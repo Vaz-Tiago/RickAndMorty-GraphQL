@@ -10,6 +10,21 @@ export const Container = styled.div`
   align-items: center;
 `;
 
+export const Content = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: center;
+`;
+
+export const Paginate = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 25px 0;
+`;
+
 export const Loading = styled.div`
   width: 300px;
   height: 300px;
